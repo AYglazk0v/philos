@@ -7,6 +7,7 @@
 # include <pthread.h>
 # include <sys/time.h>
 # include "struct.h"
+# include "life.h"
 # include "utils.h"
 
 #endif

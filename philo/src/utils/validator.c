@@ -1,9 +1,21 @@
 #include "../../inc/utils.h"
 
-int	ft_isspace(int c)
+static int	ft_isspace(int c)
 {
 	if ((c == '\f' || c == '\n' || c == '\r'
 			|| c == '\t' || c == '\v' || c == ' '))
+		return (1);
+	return (0);
+}
+
+static int	ft_isnum(char *s)
+{
+	int	i;
+
+	i = 0;
+	while (s[i] && s[i] >= '0' && s[i] <= '9')
+		i++;
+	if (s[i] == '\0')
 		return (1);
 	return (0);
 }
@@ -33,18 +45,6 @@ int	ft_atoi(const char *str)
 	return (sign * (int)num);
 }
 
-int ft_isnum(char *s)
-{
-	int	i;
-
-	i = 0;
-	while (s[i] && s[i] >= '0' && s[i] <= '9')
-		i++;
-	if (s[i] == '\0')
-		return (1);
-	return (0);
-}
-
 int	ft_valid_and_pars(int ac, char **av, t_settings *settings)
 {
 	int	i;
@@ -55,7 +55,7 @@ int	ft_valid_and_pars(int ac, char **av, t_settings *settings)
 	while (++i < ac)
 	{
 		if (!ft_isnum(av[i]) || ft_atoi(av[i]) <= 0)
-			return(1);
+			return (1);
 	}
 	ft_parser(ac, av, settings);
 	return (0);

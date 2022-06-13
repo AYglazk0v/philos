@@ -1,66 +1,89 @@
 #include "../../inc/utils.h"
 
-static int	ft_alloc_phil(size_t cnt_philo, t_phil **ph)
+int	ft_init_cntr(t_control *cntr, t_settings settings)
 {
-	*ph = (t_phil *)malloc(sizeof(t_phil) * cnt_philo);
-	if (*ph == NULL)
+	cntr->philo = malloc(sizeof(t_phil) * (settings.cnt_philo));
+	if (cntr->philo == NULL)
 		return (1);
-	return (0);
-}
-
-int	ft_init_phil(t_settings *st, t_phil **ph, t_common_var *cm)
-{
-	size_t	id;
-
-	if (ft_alloc_phil(st->cnt_philo, ph))
-		return (1);
-	id = -1;
-	cm->is_end = 0;
-	while (++id < st->cnt_philo)
+	cntr->forks = malloc(sizeof(pthread_mutex_t) * (settings.cnt_philo));
+	if (cntr->forks == NULL)
 	{
-		(*ph)[id].id = id + 1;
-		(*ph)[id].n_ate = 0;
-		(*ph)[id].time_to_eat = st->time_to_eat;
-		(*ph)[id].time_to_sleep = st->time_to_sleep;
-		(*ph)[id].l_fork = &((*ph)[id].fork);
-		(*ph)[id].r_fork = &((*ph)[(id + 1) % st->cnt_philo].fork);
-		(*ph)[id].is_end = &(cm->is_end);
-		(*ph)[id].is_end_lock = &(cm->is_end_lock);
-	}
-	return (0);
-}
-
-static int	ft_mutex_init_evnt_fork(pthread_mutex_t *fork, pthread_mutex_t *evnt)
-{
-	if (pthread_mutex_init(fork, NULL) != 0)
-		return (1);
-	if (pthread_mutex_init(evnt, NULL) != 0)
-	{
-		pthread_mutex_destroy(fork);
+		free(cntr->philo);
 		return (1);
 	}
+	cntr->settings = settings;
+	cntr->all_alive = 1;
 	return (0);
 }
 
-int	ft_init_mutex(size_t cnt, t_phil *ph, t_common_var *cm)
+int	ft_init_mutex(t_control *cntr, t_settings stt)
 {
-	size_t	id;
+	int	i;
 
-	if (pthread_mutex_init(&(cm->is_end_lock), NULL) != 0)
-		return (1);
-	id = -1;
-	while (++id < cnt)
+	i = -1;
+	while (++i < stt.cnt_philo)
 	{
-		if (ft_mutex_init_evnt_fork(&(ph[id].fork), &(ph[id].event)))
+		if (pthread_mutex_init(&(cntr->forks[i]), NULL) != 0)
+			return (ft_destr_all(i, cntr));
+	}
+	if (pthread_mutex_init(&(cntr->m_display), NULL) != 0)
+		return (ft_destr_all(i, cntr));
+	if (pthread_mutex_init(&(cntr->m_all_alive), NULL) != 0)
+		return (ft_destr_all(i, cntr));
+	if (pthread_mutex_init(&(cntr->m_state), NULL) != 0)
+		return (ft_destr_all(i, cntr));
+	if (pthread_mutex_init(&(cntr->m_nb_meals), NULL) != 0)
+		return (ft_destr_all(i, cntr));
+	return (0);
+}
+
+
+int	ft_init_philo(t_control *cntr, struct timeval t)
+{
+	int		i;
+	t_phil	*ph;
+
+	i = -1;
+	while (++i < cntr->settings.cnt_philo )
+	{
+		ph = &(cntr->philo[i]);
+		ph->id = i + 1;
+		ph->l_fork = i;
+		ph->r_fork = i + 1;
+		if (i + 1 == cntr->settings.cnt_philo)
 		{
-			while(--id)
-			{
-				pthread_mutex_destroy(&(ph[id].fork));
-				pthread_mutex_destroy(&(ph[id].event));
-			}
-			pthread_mutex_destroy(&(cm->is_end_lock));
-			return (1);
+			ph->l_fork = 0;
+			ph->r_fork = i;
 		}
+		ph->status = THINKING;
+		ph->last_eat_time = t;
+		ph->start_time = t;
+		ph->n_ate = 0;
+		ph->cntr = cntr;
 	}
+	return (0);
+}
+
+int	ft_destr_all(int i, t_control *cntr)
+{
+	int	j;
+
+	j = -1;
+	while (++j < i)
+		pthread_mutex_destroy(&(cntr->forks[j]));
+	pthread_mutex_destroy(&(cntr->m_display));
+	pthread_mutex_destroy(&(cntr->m_all_alive));
+	pthread_mutex_destroy(&(cntr->m_state));
+	pthread_mutex_destroy(&(cntr->m_nb_meals));
+	return (1);
+}
+
+int	ft_p_faild(t_control *cntr, char *s)
+{
+	ft_destr_all(cntr->settings.cnt_philo, cntr);
+	free(cntr->forks);
+	free(cntr->philo);
+	if (*s != '\0')
+		return (printf("%s\n", s));
 	return (0);
 }

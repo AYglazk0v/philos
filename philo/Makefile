@@ -2,7 +2,8 @@ NAME	=	philo
 
 CC		=	gcc
 
-FLAGS	=	-Wall -Wextra -Werror -g
+# FLAGS	=	-Wall -Wextra -Werror 
+FLAGS	=	-Wall -Wextra -Werror -fsanitize=thread -g
 
 INCL	= 	./inc/
 
@@ -10,7 +11,7 @@ CFLAGS	=	$(FLAGS) -lpthread -I $(INCL)
 
 PATH_SRC	=	./src/
 
-#PATH_LIFE	=	$(PATH_SRC)life/
+PATH_LIFE	=	$(PATH_SRC)life/
 
 PATH_UTILS	=	$(PATH_SRC)utils/
 
@@ -18,15 +19,21 @@ PATH_OBJ	=	./object_files/
 
 FILE_SRC	=	main.c \
 
-#FILE_LIFE	=	life.c\
+FILE_LIFE	=	routine.c\
+				runtime.c
 
-FILE_UTILS	=	validator.c\
-				parser.c\
-				init.c
+FILE_UTILS	=	validator.c \
+				parser.c \
+				init.c \
+				printing.c\
+				status.c \
+				time.c
+
 
 HEAD_FILE	=	./inc/philo.h\
 				./inc/utils.h\
 				./inc/struct.h\
+				./inc/life.h\
 
 SRC_PH	=	$(addprefix $(PATH_SRC), $(FILE_SRC))\
 			$(addprefix $(PATH_UTILS), $(FILE_UTILS)) \
@@ -49,8 +56,7 @@ $(PATH_OBJ)%.o	:	$(PATH_SRC)%.c $(HEAD_FILE)
 	@echo FILE COLLECTED $@
 
 $(NAME)			:	 $(OBJ) $(HEAD_FILE) $(SRC_PH)
-	@$(CC) $(CFLAGS) $(PATH_OBJ)*.o $(PATH_OBJ)utils/*.o -o $(NAME)
-	#@$(CC) $(CFLAGS) $(PATH_OBJ)*.o $(PATH_OBJ)utils/*.o $(PATH_OBJ)life/*.o -o $(NAME)
+	@$(CC) $(CFLAGS) $(PATH_OBJ)*.o $(PATH_OBJ)utils/*.o $(PATH_OBJ)life/*.o -o $(NAME)
 
 clean			:
 	@rm -rf $(PATH_OBJ)

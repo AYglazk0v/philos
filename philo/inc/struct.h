@@ -3,36 +3,48 @@
 
 # include "philo.h"
 
+# define EATING 1
+# define SLEEPING 2
+# define THINKING 3
+# define FORK 4
+# define DEAD 5
+# define CONTINUE 6
+# define STOP 7
+
 typedef struct s_settings
 {
-	size_t	cnt_philo;
-	size_t	time_to_die;
-	size_t	time_to_eat;
-	size_t	time_to_sleep;
-	size_t	cnt_eat;
+	int	cnt_philo;
+	int	time_to_die;
+	int	time_to_eat;
+	int	time_to_sleep;
+	int	cnt_eat;
 }	t_settings;
+
+typedef struct s_control
+{
+	pthread_mutex_t		m_display;
+	pthread_mutex_t		m_state;
+	pthread_mutex_t		m_all_alive;
+	pthread_mutex_t		m_nb_meals;
+	pthread_mutex_t		*forks;
+	t_settings			settings;
+	struct s_phil		*philo;
+	int					all_alive;
+}	t_control;
 
 typedef struct s_phil
 {
-	size_t			id;
-	size_t			time_to_eat;
-	size_t			time_to_sleep;
-	size_t			n_ate;
-	size_t			*is_end;
-	time_t			start_ime;
-	time_t			last_eat_time;
+	int				id;
+	int				l_fork;
+	int				r_fork;
+	int				status;
+	int				time_to_eat;
+	int				time_to_sleep;
+	int				n_ate;
+	struct timeval	start_time;
+	struct timeval	last_eat_time;
 	pthread_t		philo;
-	pthread_mutex_t	fork;
-	pthread_mutex_t	event;
-	pthread_mutex_t	*l_fork;
-	pthread_mutex_t	*r_fork;
-	pthread_mutex_t	*is_end_lock;
+	t_control		*cntr;
 }	t_phil;
-
-typedef struct s_common_var
-{
-	size_t			is_end;
-	pthread_mutex_t	is_end_lock;
-}	t_common_var;
 
 #endif
