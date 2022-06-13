@@ -2,8 +2,8 @@ NAME	=	philo
 
 CC		=	gcc
 
-# FLAGS	=	-Wall -Wextra -Werror 
-FLAGS	=	-Wall -Wextra -Werror -fsanitize=thread -g
+FLAGS	=	-Wall -Wextra -Werror -fsanitize=address
+# FLAGS	=	-Wall -Wextra -Werror -fsanitize=thread
 
 INCL	= 	./inc/
 
