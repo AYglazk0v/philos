@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   init.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gtaggana <gtaggana@student.21-schoo>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/06/14 11:30:46 by gtaggana          #+#    #+#             */
+/*   Updated: 2022/06/14 11:32:34 by gtaggana         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../inc/utils.h"
 
 int	ft_init_cntr(t_control *cntr, t_settings settings)
@@ -37,14 +49,13 @@ int	ft_init_mutex(t_control *cntr, t_settings stt)
 	return (0);
 }
 
-
 int	ft_init_philo(t_control *cntr, struct timeval t)
 {
 	int		i;
 	t_phil	*ph;
 
 	i = -1;
-	while (++i < cntr->settings.cnt_philo )
+	while (++i < cntr->settings.cnt_philo)
 	{
 		ph = &(cntr->philo[i]);
 		ph->id = i + 1;

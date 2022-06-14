@@ -1,20 +1,29 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   init.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gtaggana <gtaggana@student.21-schoo>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/06/14 11:31:28 by gtaggana          #+#    #+#             */
+/*   Updated: 2022/06/14 11:43:28 by gtaggana         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../inc/utils.h"
 
-int		ft_init_prm(t_param *p)
+int	ft_init_prm(t_param *p)
 {
 	p->pid = malloc(sizeof(pid_t) * p->cnt_philo);
 	if (p->pid == NULL)
 		return (1);
-	sem_unlink("/sem_death");
-	sem_unlink("/sem_fork");
-	sem_unlink("/sem_print");
+	ft_helpunlink(3);
 	p->sem_death = sem_open("/sem_death", O_CREAT | O_EXCL, 0644, 1);
 	if (p->sem_death == SEM_FAILED)
 		return (1);
 	p->sem_print = sem_open("/sem_print", O_CREAT | O_EXCL, 0644, 1);
 	if (p->sem_print == SEM_FAILED)
 	{
-		//return (printf("", sem_close(p->sem_death), sem_unlink("/sem_death")));
 		sem_close(p->sem_death);
 		sem_unlink("/sem_death");
 		return (1);
@@ -23,9 +32,8 @@ int		ft_init_prm(t_param *p)
 	if (p->sem_fork == SEM_FAILED)
 	{
 		sem_close(p->sem_death);
-		sem_unlink("/sem_death");
 		sem_close(p->sem_print);
-		sem_unlink("/sem_print");
+		ft_helpunlink(2);
 		return (1);
 	}
 	return (0);
