@@ -64,6 +64,9 @@ $ make -C philo_bonus/
 **Пример**: С использованием **number_of_times_each_philosopher_must_eat** 
 `./philo 7 310 100 100 7`
 
+ ## 🎬 Демонстрация:
+ ![philo](https://github.com/AYglazk0v/philos/blob/main/philo.gif)
+
  ## 📋 Тестирование:
 
 Для проверки на гонку данных необходимо добавить в Makefile флаг `-fsanitize=thread`.
